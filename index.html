@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hubclass · Educação e marketing para lojistas de iPhone</title>
+  <meta name="description" content="A Hubclass é o ecossistema de educação e marketing do mercado mobile. Formação Varejo para estruturar e escalar sua loja de iPhone, Assessoria M7 para ter um time executando o marketing." />
+  <meta name="theme-color" content="#04081A" />
+  <meta property="og:title" content="Hubclass · Sua loja de iPhone lucrando com método" />
+  <meta property="og:description" content="Educação e marketing para lojistas do mercado mobile." />
+  <meta property="og:image" content="/media/hero-wide-poster.jpg" />
+  <meta property="og:locale" content="pt_BR" />
+  <link rel="icon" href="/media/favicon-64.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/media/apple-touch-icon.png" />
+  <link rel="preload" as="image" href="/media/hero-tall-poster.jpg" media="(max-aspect-ratio: 9/10)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/media/hero-wide-poster.jpg" media="(min-aspect-ratio: 9/10)" fetchpriority="high" />
+  <script>
+    // Habilita a coreografia só com JS ativo e sem pedido de movimento reduzido.
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      d.classList.add('motion');
+      // Abertura só na primeira entrada pela hero: sem âncora, sem voltar/recarregar, uma vez por sessão.
+      try {
+        var nav = performance.getEntriesByType('navigation')[0];
+        var type = nav ? nav.type : 'navigate';
+        if (!location.hash && type === 'navigate' && !sessionStorage.getItem('hc-opening')) {
+          d.classList.add('opening');
+          sessionStorage.setItem('hc-opening', '1');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body class="page-home">
+  <!-- Abertura: a marca se escreve no papel; depois a página sobe por baixo e a empurra para o cabeçalho. -->
+  <div class="loader" aria-hidden="true" data-loader>
+    <div class="loader__paper" data-loader-paper></div>
+    <div class="loader__brand" data-loader-brand>
+      <img class="loader__mark" src="/media/hubclass-mark.png" alt="" width="36" height="48" />
+      <span class="loader__word" data-loader-word>hubclass</span>
+      <svg class="loader__swoosh" viewBox="0 0 220 40" preserveAspectRatio="none">
+        <path pathLength="1" d="M6 24 C 40 14, 92 10, 140 14 C 170 17, 196 22, 214 12" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- @partial header -->
+
+  <main id="conteudo">
+    <!-- 1. Abertura: o filme do Hub Experience. Ao rolar, ele se recolhe para um quadro. -->
+    <section class="intro" aria-labelledby="hero-title" data-intro>
+      <div class="intro__stage" data-intro-stage>
+        <div class="intro__film" data-film>
+          <picture>
+            <source media="(max-aspect-ratio: 9/10)" srcset="/media/hero-tall-poster.jpg" width="480" height="852" />
+            <img class="intro__poster" src="/media/hero-wide-poster.jpg" width="1600" height="684" fetchpriority="high"
+                 alt="Palestrante no palco do Hub Experience, diante do telão com a marca do evento." />
+          </picture>
+          <video class="intro__video" muted playsinline loop preload="none" aria-hidden="true" tabindex="-1" data-hero-video></video>
+        </div>
+        <div class="intro__shade" aria-hidden="true"></div>
+
+        <div class="container intro__copy">
+          <h1 class="intro__title" id="hero-title">
+            <span class="line"><span>Sua loja de iPhone</span></span>
+            <span class="line"><span>lucrando <em class="ink" data-doodle="underline" data-doodle-late>com método.</em></span></span>
+          </h1>
+          <a class="btn btn--primary intro__cta" data-magnet href="https://wa.me/5521987193342?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Hubclass%20e%20quero%20entender%20qual%20caminho%20faz%20sentido%20para%20a%20minha%20loja." target="_blank" rel="noopener">
+            <span data-roll>Conversar no WhatsApp</span>
+            <svg class="btn__icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <ol class="intro__notes container">
+          <li class="note note--1">A Hubclass é o ecossistema de <strong>educação e marketing</strong> do mercado mobile.</li>
+          <li class="note note--2">Formamos lojistas em gestão, vendas e marketing. <strong>Ou assumimos o marketing da sua loja.</strong></li>
+          <li class="note note--3"><strong class="note__figure">+1.000</strong> alunos lucrando com método, segundo o perfil oficial @hubclass.br.</li>
+        </ol>
+
+        <p class="intro__credit">Hub Experience · filme de @sampaio.filmes</p>
+        <button class="film-toggle" type="button" hidden data-hero-toggle aria-pressed="false">
+          <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10M13 5v10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5.5v9l7.5-4.5z" fill="currentColor"/></svg>
+          <span class="sr-only" data-hero-toggle-label>Pausar vídeo</span>
+        </button>
+        <span class="intro__cue" aria-hidden="true"><span></span></span>
+      </div>
+    </section>
+
+    <!-- 2. A real do varejo: os sintomas são riscados à mão, um a um, conforme você lê. -->
+    <section class="problem" aria-labelledby="problem-title">
+      <div class="container">
+        <p class="kicker" data-type>A real do varejo</p>
+        <h2 class="problem__title" id="problem-title" data-reveal data-split>
+          O problema nunca foi falta de esforço. Foi falta de <span class="ink emph" data-doodle="circle">método.</span>
+        </h2>
+
+        <div class="problem__grid">
+          <p class="problem__lead" data-reveal style="--d: 0.25s">Você abre a loja todo dia, organiza, atende, apaga incêndio, e no fim do mês a conta não fecha. É o que mais se ouve das lojas que chegam à Hubclass.</p>
+          <figure class="problem__figure" data-unveil>
+            <img src="/media/film-iphones-960.webp" srcset="/media/film-iphones-960.webp 960w, /media/film-iphones-1600.webp 1600w"
+                 sizes="(min-width: 900px) 58vw, 100vw" width="960" height="410" loading="lazy" decoding="async"
+                 alt="iPhones expostos numa vitrine durante o Hub Experience." />
+          </figure>
+        </div>
+
+        <ul class="symptoms" data-symptoms>
+          <li><span class="symptom__text">Vender com margem de <b>R$ 100</b> achando que está tudo certo.</span></li>
+          <li><span class="symptom__text">Investir em tráfego <b>sem medir</b> o resultado.</span></li>
+          <li><span class="symptom__text">Um time que <b>não bate meta</b>.</span></li>
+          <li><span class="symptom__text">Fornecedores que <b>comem a margem</b>.</span></li>
+          <li><span class="symptom__text">Processos que prendem você <b>no balcão</b>.</span></li>
+          <li><span class="symptom__text">Falta de <b>mão de obra qualificada</b>.</span></li>
+        </ul>
+        <p class="problem__after hand" data-reveal>Dá para riscar tudo isso da lista.</p>
+      </div>
+    </section>
+
+    <!-- 3. Dois caminhos: uma escolha, desenhada à mão entre as duas ofertas. -->
+    <section class="paths" id="caminhos" aria-labelledby="paths-title">
+      <div class="container">
+        <header class="paths__head">
+          <p class="kicker" data-type>Dois caminhos, um método</p>
+          <h2 class="paths__title" id="paths-title" data-reveal data-split>Escolha pelo <span class="ink" data-doodle="underline">momento da sua loja</span>, não pelo nome do produto.</h2>
+          <p class="paths__lead" data-reveal style="--d: 0.3s">Os dois usam o mesmo Método Lojas Lucrativas. A diferença está em quem coloca a mão na massa.</p>
+        </header>
+
+        <div class="paths__split">
+          <article class="offer offer--learn" aria-labelledby="path-formacao" data-reveal data-tilt>
+            <span class="offer__glow" aria-hidden="true"></span>
+            <p class="offer__who">Você executa, com mentoria</p>
+            <h3 class="offer__name" id="path-formacao">Formação Varejo</h3>
+            <p class="offer__figure"><b data-count="6">6</b><span>meses de acompanhamento</span></p>
+            <p class="offer__text">Programa Hub Consult: 12 encontros individuais e 7 mentores para estruturar marketing, vendas, pessoas, finanças, contábil e jurídico.</p>
+            <p class="offer__fit">Para quem já opera e quer sair da guerra de preço com estrutura.</p>
+            <a class="btn btn--dark" data-magnet href="/formacao-varejo/"><span data-roll>Ver a jornada da Formação</span>
+              <svg class="btn__icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </article>
+
+          <div class="paths__or" aria-hidden="true" data-reveal>
+            <span class="paths__or-word hand">ou</span>
+            <svg class="paths__or-ring doodle" viewBox="0 0 120 120" data-draw><path pathLength="1" d="M62 10 C 30 8, 10 34, 12 62 C 14 92, 40 110, 66 108 C 96 106, 112 80, 108 52 C 104 26, 82 12, 56 14 C 44 15, 36 20, 30 26" /></svg>
+            <svg class="paths__or-arrow paths__or-arrow--l doodle" viewBox="0 0 120 70" data-draw><path pathLength="1" d="M112 14 C 86 6, 40 14, 14 50 M14 50 L 16 28 M14 50 L 36 46" /></svg>
+            <svg class="paths__or-arrow paths__or-arrow--r doodle" viewBox="0 0 120 70" data-draw><path pathLength="1" d="M8 56 C 34 64, 80 56, 106 20 M106 20 L 84 24 M106 20 L 104 42" /></svg>
+          </div>
+
+          <article class="offer offer--done" aria-labelledby="path-m7" data-reveal data-tilt style="--d: 0.12s">
+            <span class="offer__glow" aria-hidden="true"></span>
+            <p class="offer__who">Nós executamos por você</p>
+            <h3 class="offer__name" id="path-m7">Assessoria M7</h3>
+            <p class="offer__figure"><b data-count="8" data-count-from="1">8</b><span>profissionais pelo preço de 1</span></p>
+            <p class="offer__text">Tráfego, design, social media, copy, vídeo, estratégia, vendas e atendimento trabalhando no marketing da sua loja.</p>
+            <p class="offer__fit">Sem fidelidade. Começa com um diagnóstico gratuito.</p>
+            <a class="btn btn--primary" data-magnet href="/assessoria-m7/"><span data-roll>Conhecer o time da M7</span>
+              <svg class="btn__icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </article>
+        </div>
+
+        <p class="paths__note" data-reveal>Começando com pouco capital? Existem as <strong>formações táticas</strong>, com turmas menores, para lojistas em fase de estruturação. <a href="https://wa.me/5521987193342?text=Ol%C3%A1!%20Quero%20saber%20sobre%20as%20forma%C3%A7%C3%B5es%20t%C3%A1ticas%20da%20Hubclass." target="_blank" rel="noopener">Pergunte ao time</a>.</p>
+      </div>
+    </section>
+
+    <!-- 4. Método: a sala se abre com a rolagem; os três pilares se preenchem um por vez. -->
+    <section class="method" id="metodo" aria-labelledby="method-title">
+      <figure class="method__band" data-unveil="wide">
+        <img src="/media/film-room-1600.webp" srcset="/media/film-room-960.webp 960w, /media/film-room-1600.webp 1600w"
+             sizes="100vw" width="1600" height="684" loading="lazy" decoding="async"
+             alt="Salão do Hub Experience lotado diante do telão." />
+        <figcaption class="container"><span class="method__quote" data-type>“A maior sala de aula do mercado mobile.”</span> <span class="method__source">Hub Experience</span></figcaption>
+      </figure>
+
+      <div class="method__pin" data-pillars>
+        <div class="method__stage">
+          <div class="container method__grid">
+            <div class="method__side">
+              <h2 class="method__title" id="method-title" data-reveal data-split>Método Lojas Lucrativas: vender mais caro, mais vezes, com o lucro que a loja merece.</h2>
+              <p class="method__index" aria-hidden="true"><span data-pillar-index>01</span> / 03</p>
+            </div>
+            <ul class="pillars">
+              <li class="pillar">
+                <h3 class="pillar__name">Marketing</h3>
+                <div class="pillar__body">
+                  <p class="pillar__claim">Uma marca forte de verdade.</p>
+                  <p>Posicionamento com proposta única de valor, vários canais de venda e conteúdo que diferencia sua loja da concorrência.</p>
+                </div>
+              </li>
+              <li class="pillar">
+                <h3 class="pillar__name">Vendas</h3>
+                <div class="pillar__body">
+                  <p class="pillar__claim">Venda caro, e venda mais.</p>
+                  <p>Técnicas e processos para o time fechar com o preço mais alto da região, e produtos que aumentam o ticket médio.</p>
+                </div>
+              </li>
+              <li class="pillar">
+                <h3 class="pillar__name">Gestão</h3>
+                <div class="pillar__body">
+                  <p class="pillar__claim">Menos custo, mais lucro.</p>
+                  <p>Corte de custos fixos e variáveis, novas fontes de receita e compra mais barata.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Quem conduz: três sócios, mesmo protagonismo. -->
+    <section class="people" id="quem-conduz" aria-labelledby="people-title">
+      <div class="container">
+        <header class="people__head">
+          <h2 class="people__title" id="people-title" data-reveal data-split>Lojistas ensinando <span class="ink" data-doodle="underline">lojistas.</span></h2>
+          <p class="people__lead" data-reveal style="--d: 0.2s">Os três sócios fundadores da Hubclass criaram a Você de iPhone, operação que a empresa apresenta com mais de R$ 10 milhões de faturamento anual. O método nasceu dentro da loja deles.</p>
+        </header>
+        <ul class="founders" data-reveal>
+          <li class="founder" style="--i: 0">
+            <figure class="founder__photo" data-tilt>
+              <img src="/media/alex-lemos-480.webp" srcset="/media/alex-lemos-480.webp 480w, /media/alex-lemos-800.webp 800w"
+                   sizes="(min-width: 900px) 30vw, 38vw" width="480" height="600" loading="lazy" decoding="async"
+                   alt="Retrato de Alex Lemos, de colete azul-marinho e camisa branca." />
+            </figure>
+            <p class="founder__note hand" aria-hidden="true">+10 mil alunos!
+              <svg class="doodle" viewBox="0 0 80 60" data-draw><path pathLength="1" d="M70 6 C 56 30, 36 42, 10 48 M10 48 L 26 36 M10 48 L 24 58" /></svg>
+            </p>
+            <div class="founder__text">
+              <h3 class="founder__name">Alex Lemos</h3>
+              <p class="founder__role">Gestão</p>
+              <p class="founder__bio">Especialista em gestão. Já formou mais de 10 mil alunos no varejo.</p>
+            </div>
+          </li>
+          <li class="founder" style="--i: 1">
+            <figure class="founder__photo" data-tilt>
+              <img src="/media/juan-rodrigues-480.webp" srcset="/media/juan-rodrigues-480.webp 480w, /media/juan-rodrigues-800.webp 800w"
+                   sizes="(min-width: 900px) 30vw, 38vw" width="480" height="600" loading="lazy" decoding="async"
+                   alt="Retrato de Juan Rodrigues, de blazer cinza, com a mão no queixo." />
+            </figure>
+            <div class="founder__text">
+              <h3 class="founder__name">Juan Rodrigues</h3>
+              <p class="founder__role">CRM e vendas</p>
+              <p class="founder__bio">Mestre em CRM, vendas e escala digital.</p>
+            </div>
+          </li>
+          <li class="founder" style="--i: 2">
+            <figure class="founder__photo" data-tilt>
+              <img src="/media/daniel-silva-480.webp" srcset="/media/daniel-silva-480.webp 480w, /media/daniel-silva-800.webp 800w"
+                   sizes="(min-width: 900px) 30vw, 38vw" width="480" height="600" loading="lazy" decoding="async"
+                   alt="Retrato de Daniel Silva, de terno azul-claro e camisa preta." />
+            </figure>
+            <div class="founder__text">
+              <h3 class="founder__name">Daniel Silva</h3>
+              <p class="founder__role">Tráfego e marca</p>
+              <p class="founder__bio">Especialista em tráfego pago, branding e estratégias de marketing.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. Dúvidas -->
+    <section class="faq" id="duvidas" aria-labelledby="faq-title">
+      <div class="container faq__grid">
+        <div class="faq__side">
+          <p class="kicker" data-type>Perguntas frequentes</p>
+          <h2 class="faq__title" id="faq-title" data-reveal data-split>Antes de <span class="ink" data-doodle="circle">decidir.</span></h2>
+        </div>
+        <div class="faq__list" data-reveal>
+          <details class="qa">
+            <summary><span class="qa__q">A Hubclass é uma agência de marketing?</span><span class="qa__icon" aria-hidden="true"></span></summary>
+            <div class="qa__a"><p>Não só. A Formação Varejo é uma implementação completa da operação, com estratégias de marketing focadas no varejo de iPhone. Quem quer que o marketing seja executado por um time contrata a Assessoria M7.</p></div>
+          </details>
+          <details class="qa">
+            <summary><span class="qa__q">Já tenho loja. Vale a pena entrar?</span><span class="qa__icon" aria-hidden="true"></span></summary>
+            <div class="qa__a"><p>Sim. Boa parte dos alunos já opera e busca sair do ciclo de vendas sem margem e da falta de estrutura.</p></div>
+          </details>
+          <details class="qa">
+            <summary><span class="qa__q">Não tenho capital agora. Dá para começar menor?</span><span class="qa__icon" aria-hidden="true"></span></summary>
+            <div class="qa__a"><p>Sim. Existem as formações táticas, para lojistas em fase de estruturação, com turmas menores e foco em resultado rápido.</p></div>
+          </details>
+          <details class="qa">
+            <summary><span class="qa__q">Quanto tempo leva para ver resultado?</span><span class="qa__icon" aria-hidden="true"></span></summary>
+            <div class="qa__a"><p>Varia de loja para loja. Algumas crescem muito rápido, outras num ritmo mais moderado, e isso depende também do foco e da disciplina para aplicar o método.</p></div>
+          </details>
+          <details class="qa">
+            <summary><span class="qa__q">O método funciona fora do nicho de iPhone?</span><span class="qa__icon" aria-hidden="true"></span></summary>
+            <div class="qa__a"><p>Para alguns negócios, sim; para outros, não. É preciso analisar cada caso para saber se o método pode ser replicado.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Fechamento: a palavra-chave ganha um balão de conversa desenhado à mão. -->
+    <section class="closing" aria-labelledby="closing-title">
+      <div class="container closing__inner">
+        <p class="kicker kicker--center" data-type>Próximo passo</p>
+        <h2 class="closing__title" id="closing-title" data-reveal data-split>Toda loja de sucesso começou com uma decisão. A sua começa numa <span class="ink emph" data-doodle="bubble">conversa.</span></h2>
+        <p class="closing__lead" data-reveal style="--d: 0.3s">Conte em que fase está sua operação. O time comercial indica se o caminho é a Formação Varejo, a Assessoria M7 ou uma formação tática para começar menor.</p>
+        <div class="actions" data-reveal style="--d: 0.45s">
+          <a class="btn btn--primary btn--lg" data-magnet href="https://wa.me/5521987193342?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Hubclass%20e%20quero%20entender%20qual%20caminho%20faz%20sentido%20para%20a%20minha%20loja." target="_blank" rel="noopener">
+            <span data-roll>Conversar no WhatsApp</span>
+            <svg class="btn__icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="btn btn--ghost btn--lg" data-magnet href="https://massessoria.yayforms.link/RlggJ92" target="_blank" rel="noopener"><span data-roll>Pedir diagnóstico da M7</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @partial footer -->
+</body>
+</html>
