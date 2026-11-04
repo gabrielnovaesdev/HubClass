@@ -989,7 +989,8 @@ main {
 }
 @media (max-width: 899px) {
   .journey__track { padding-inline: var(--gutter); }
-  .motion .step { opacity: 0.35; transition: opacity 0.6s var(--ease), border-color 0.5s, background-color 0.5s; }
+  /* 0.45: menor opacidade com contraste ≥ 3:1 no texto das etapas ainda não alcançadas. */
+  .motion .step { opacity: 0.45; transition: opacity 0.6s var(--ease), border-color 0.5s, background-color 0.5s; }
   .motion .step.is-current, .motion .step.is-past { opacity: 1; }
 }
 

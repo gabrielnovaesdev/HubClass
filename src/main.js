@@ -189,8 +189,8 @@ document.querySelectorAll('[data-scrub]').forEach((el) => {
 const weightGroups = [];
 document.querySelectorAll('[data-weight]').forEach((el) => {
   const text = el.textContent;
-  el.setAttribute('aria-label', text.trim());
-  el.innerHTML = [...text].map((ch) => (ch === ' ' ? ' ' : `<span class="wc" aria-hidden="true">${ch}</span>`)).join('');
+  // aria-label em <span> sem papel é ignorado por leitores de tela; o texto vai num sr-only, como no rolamento.
+  el.innerHTML = `<span class="sr-only">${text.trim()}</span>` + [...text].map((ch) => (ch === ' ' ? ' ' : `<span class="wc" aria-hidden="true">${ch}</span>`)).join('');
   weightGroups.push({ el, chars: [...el.querySelectorAll('.wc')].map((c) => ({ c, w: 700, t: 700, x: 0, y: 0 })) });
 });
 if (finePointer && !reduceMotion && weightGroups.length) {
