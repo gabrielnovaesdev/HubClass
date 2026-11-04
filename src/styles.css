@@ -839,7 +839,8 @@ main {
   border-radius: 0 0 var(--sheet-r) var(--sheet-r);
   box-shadow: 0 50px 80px -30px rgba(0, 0, 0, 0.7);
 }
-.closing { position: relative; background: var(--ink); border-radius: 0 0 var(--sheet-r) var(--sheet-r); }
+/* overflow-x: clip — o balão desenhado em volta da palavra final passa das bordas da tela em ~545–600px. */
+.closing { position: relative; background: var(--ink); border-radius: 0 0 var(--sheet-r) var(--sheet-r); overflow-x: clip; }
 .closing__inner { padding-block: clamp(96px, 12vw, 200px) clamp(96px, 11vw, 176px); text-align: center; display: grid; justify-items: center; }
 .closing__title { font-size: clamp(2.2rem, 1rem + 4.4vw, 5.2rem); font-weight: 700; letter-spacing: -0.045em; line-height: 1.02; max-width: 17ch; }
 .closing__lead { margin-top: clamp(40px, 4vw, 56px); max-width: 50ch; font-size: var(--fs-lead); color: var(--soft); }
@@ -1249,6 +1250,10 @@ tfoot .vs__m7 { border-bottom: 1px solid rgba(34, 228, 242, 0.45); border-radius
   .vs__table tfoot td { font-size: 0.78rem; }
   thead .vs__m7 { border-radius: 14px 14px 0 0; }
   tfoot .vs__m7 { border-radius: 0 0 14px 14px; }
+}
+/* Em 320px a largura mínima da tabela (palavras longas + respiro) passava da coluna e gerava rolagem lateral. */
+@media (max-width: 359px) {
+  .vs__table th, .vs__table td { padding-inline: 4px; }
 }
 
 .origin { padding-bottom: clamp(80px, 10vw, 160px); background: var(--ink); }
