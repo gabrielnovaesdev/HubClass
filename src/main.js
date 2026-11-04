@@ -131,6 +131,9 @@ const charSpans = (text, cls) => [...text].map((ch, i) => `<span class="${cls}" 
 
 // Links e botões: duas cópias empilhadas; no hover, cada letra sobe em cascata.
 document.querySelectorAll('[data-roll]').forEach((el) => {
+  // Sem hover (toque), o rolamento nunca aparece; nos botões o texto fica simples para poder quebrar
+  // em telas estreitas em vez de vazar do cartão.
+  if (!finePointer && el.closest('.btn')) return;
   const text = el.textContent.trim().replace(/\s+/g, ' ');
   const chars = charSpans(text, 'rc');
   el.innerHTML = `<span class="sr-only">${text}</span><span class="roll" aria-hidden="true"><span class="roll__a">${chars}</span><span class="roll__b">${chars}</span></span>`;

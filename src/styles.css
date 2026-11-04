@@ -139,6 +139,7 @@ p { text-wrap: pretty; }
 .btn {
   position: relative;
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  text-align: center;
   min-height: 52px; padding: 14px 24px;
   border-radius: 999px;
   font-family: var(--font-display); font-weight: 600; font-size: 0.98rem;
