@@ -721,7 +721,8 @@ html:not(.motion) .pillar__name::after { display: none; }
 .pillar__body p:last-child { padding-bottom: 10px; }
 
 .motion .method__pin { height: 330svh; }
-.motion .method__stage { position: sticky; top: 0; height: 100svh; display: grid; align-items: center; padding-block: var(--header-h) 24px; }
+/* Em telas baixas o palco cresce além de 100svh e prende pela base (--stage-top, ver pinByBottom no JS). */
+.motion .method__stage { position: sticky; top: var(--stage-top, 0px); min-height: 100svh; display: grid; align-items: center; padding-block: var(--header-h) 24px; }
 @media (min-width: 900px) {
   .method__grid { grid-template-columns: 4fr 8fr; gap: 64px; align-items: center; }
   .pillar__body p { margin-left: clamp(6px, 1vw, 14px); }
@@ -964,7 +965,7 @@ main {
 
 @media (min-width: 900px) {
   .motion .journey { height: 420svh; }
-  .motion .journey__stage { position: sticky; top: 0; height: 100svh; padding-block: calc(var(--header-h) + 24px) 32px; display: grid; grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); }
+  .motion .journey__stage { position: sticky; top: var(--stage-top, 0px); min-height: 100svh; padding-block: calc(var(--header-h) + 24px) 32px; display: grid; grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); }
   .motion .journey__head { grid-template-columns: 1fr auto; align-items: end; }
   .motion .journey__head .kicker { grid-column: 1 / -1; margin-bottom: 0; }
   .motion .journey__viewport { margin-top: 0; display: grid; align-items: center; }

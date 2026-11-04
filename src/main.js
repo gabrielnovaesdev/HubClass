@@ -562,6 +562,16 @@ symptomLists.forEach((list) => [...list.children].forEach((li) => scene({
   },
 })));
 
+// Palco fixo mais alto que a tela (celular deitado, notebook baixo): sobe o ponto de fixação (--stage-top
+// negativo) para que ele prenda pela base, sem cortar o conteúdo nem invadir a seção seguinte.
+function pinByBottom(stage) {
+  if (!stage) return;
+  const fit = () => stage.style.setProperty('--stage-top', `${Math.min(0, document.documentElement.clientHeight - stage.offsetHeight)}px`);
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(stage);
+  addEventListener('resize', fit);
+  fit();
+}
+
 // Pilares do método: cada palavra se preenche, e só a descrição dela fica aberta.
 const pillarsPin = document.querySelector('[data-pillars]');
 if (pillarsPin) {
@@ -576,6 +586,7 @@ if (pillarsPin) {
     body.append(inner);
   });
   names.forEach((n) => n.setAttribute('data-text', n.textContent));
+  pinByBottom(pillarsPin.querySelector('.method__stage'));
   let active = -1;
   scene({
     smooth: true,
@@ -599,6 +610,7 @@ if (journey) {
   const steps = [...track.querySelectorAll('.step')];
   const index = journey.querySelector('[data-journey-index]');
   const wide = matchMedia('(min-width: 900px)');
+  pinByBottom(journey.querySelector('.journey__stage'));
   let maxX = 0;
   const readTrack = () => { maxX = Math.max(0, track.scrollWidth - innerWidth); };
   addEventListener('resize', () => { maxX = -1; });
