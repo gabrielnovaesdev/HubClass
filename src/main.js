@@ -86,12 +86,20 @@ document.querySelectorAll('.nav__link').forEach((link) => {
 document.querySelectorAll('.nav__list > li').forEach((li, i) => li.style.setProperty('--i', i));
 
 const header = document.querySelector('[data-header]');
-let lastY = 0;
+// O cabeçalho só muda de estado depois de andar uma distância real numa mesma direção:
+// com a rolagem interpolada, cada quadro anda poucos pixels e uma regra por quadro piscaria.
+let lastY = 0; let travel = 0; let hidden = false;
+const setHidden = (h) => { if (h !== hidden) { hidden = h; header?.classList.toggle('is-hidden', h); } };
 const updateHeader = () => {
   const y = scrollY;
+  const dy = y - lastY;
+  lastY = y;
   header?.classList.toggle('is-solid', y > 24);
-  if (!root.classList.contains('menu-open')) header?.classList.toggle('is-hidden', y > 480 && y > lastY + 2);
-  if (Math.abs(y - lastY) > 2) lastY = y;
+  if (root.classList.contains('menu-open') || y < 480) { travel = 0; setHidden(false); return; }
+  if (dy === 0) return;
+  travel = Math.sign(dy) === Math.sign(travel) ? travel + dy : dy;
+  if (travel > 64) setHidden(true);
+  else if (travel < -48) setHidden(false);
 };
 requestAnimationFrame(updateHeader);
 addEventListener('scroll', updateHeader, { passive: true });
@@ -104,7 +112,7 @@ if (toggle && menu) {
     toggle.querySelector('.nav__toggle-label').textContent = open ? 'Fechar' : 'Menu';
     menu.classList.toggle('is-open', open);
     root.classList.toggle('menu-open', open);
-    header?.classList.remove('is-hidden');
+    setHidden(false);
     document.querySelectorAll('main, .site-footer').forEach((el) => { el.inert = open; });
     if (open) { lenis?.stop(); menu.querySelector('a')?.focus(); } else lenis?.start();
   };
@@ -458,6 +466,57 @@ document.querySelectorAll('details.qa').forEach((qa) => {
 });
 
 /* ==========================================================================
+   Formação · "Para quem é": autodiagnóstico de três itens
+   O veredito depende de quais itens foram marcados, não só de quantos:
+   quem não quer aprender a fazer vai para a M7; quem ainda não opera, para as táticas.
+   ========================================================================== */
+const fit = document.querySelector('[data-fit]');
+if (fit) {
+  const items = [...fit.querySelectorAll('[data-fit-item]')];
+  const count = fit.querySelector('[data-fit-count]');
+  const verdict = fit.querySelector('.fit__verdict');
+  const title = fit.querySelector('[data-fit-title]');
+  const text = fit.querySelector('[data-fit-text]');
+  const cta = fit.querySelector('[data-fit-cta]');
+  const routes = Object.fromEntries([...fit.querySelectorAll('[data-route]')].map((r) => [r.dataset.route, r]));
+  const verdicts = {
+    none: ['Comece marcando os itens.', 'Cada item é um sinal de que a Formação foi pensada para a sua fase.'],
+    some: ['Bom começo.', 'Marque o que mais for verdade para a sua loja. Se algum não se aplicar, há outro caminho logo abaixo.'],
+    m7: ['Talvez você queira delegar.', 'Se a ideia é ter um time executando o marketing, a Assessoria M7 é o caminho mais direto.'],
+    tatica: ['Comece menor.', 'Para quem ainda está estruturando a loja, as formações táticas têm turmas menores e foco em resultado rápido.'],
+    match: ['Perfil da Formação Varejo.', 'Você já opera, quer margem e prefere aprender a fazer. É exatamente para quem a Formação foi feita.'],
+  };
+  let current = 'none';
+  let swapTimer;
+  const update = () => {
+    const on = items.map((b) => b.getAttribute('aria-pressed') === 'true');
+    const n = on.filter(Boolean).length;
+    fit.style.setProperty('--fit', n);
+    count.textContent = String(n);
+    let key = n === 0 ? 'none' : 'some';
+    if (n === 3) key = 'match';
+    else if (on[0] && on[1] && !on[2]) key = 'm7';
+    else if (!on[0] && on[2]) key = 'tatica';
+    fit.classList.toggle('is-match', key === 'match');
+    routes.m7?.classList.toggle('is-suggested', key === 'm7');
+    routes.tatica?.classList.toggle('is-suggested', key === 'tatica');
+    if (key === current) return;
+    current = key;
+    clearTimeout(swapTimer);
+    verdict.classList.add('is-swapping');
+    swapTimer = setTimeout(() => {
+      [title.textContent, text.textContent] = verdicts[key];
+      cta.hidden = key !== 'match';
+      verdict.classList.remove('is-swapping');
+    }, reduceMotion ? 0 : 260);
+  };
+  items.forEach((b) => b.addEventListener('click', () => {
+    b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
+    update();
+  }));
+}
+
+/* ==========================================================================
    Cenas ligadas à rolagem
    ========================================================================== */
 const scene = (s) => { scenes.push(s); return s; };
@@ -571,61 +630,9 @@ if (journey) {
   });
 }
 
-// M7: o time chega um a um; o número gira de 1 a 8 como um odômetro.
-const team = document.querySelector('[data-team]');
-if (team) {
-  const roles = [...team.querySelectorAll('.role:not(.role--core)')];
-  const all = [...team.querySelectorAll('.role')];
-  const odo = team.querySelector('[data-odo]');
-  const label = team.querySelector('[data-team-label]');
-  const inner = team.querySelector('[data-team-inner]');
-  const linesSvg = team.querySelector('[data-team-lines]');
-  let lines = [];
-  // Linhas à mão do número até cada papel, recalculadas com o tamanho da tela.
-  const buildLines = () => {
-    if (!linesSvg || getComputedStyle(linesSvg).display === 'none') return;
-    const box = inner.getBoundingClientRect();
-    const c = odo.getBoundingClientRect();
-    const cx = c.left + c.width / 2 - box.left; const cy = c.top + c.height / 2 - box.top;
-    linesSvg.setAttribute('viewBox', `0 0 ${box.width.toFixed(0)} ${box.height.toFixed(0)}`);
-    linesSvg.innerHTML = '';
-    lines = all.map((role, i) => {
-      const r = role.getBoundingClientRect();
-      const x = r.left + r.width / 2 - box.left; const y = r.top + r.height / 2 - box.top;
-      const sx = lerp(cx, x, 0.3); const sy = lerp(cy, y, 0.3);
-      const ex = lerp(cx, x, 0.86); const ey = lerp(cy, y, 0.86);
-      const bend = (i % 2 ? 1 : -1) * 18;
-      const mx = (sx + ex) / 2 - (ey - sy) * bend / 400; const my = (sy + ey) / 2 + (ex - sx) * bend / 400;
-      const p = document.createElementNS(svgNS, 'path');
-      p.setAttribute('d', `M${sx.toFixed(1)} ${sy.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`);
-      p.setAttribute('pathLength', '1');
-      linesSvg.append(p);
-      return p;
-    });
-  };
-  requestAnimationFrame(buildLines);
-  document.fonts?.ready.then(buildLines);
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(buildLines, 150); });
-  let shown = -1;
-  scene({
-    smooth: true,
-    measure: (vh) => {
-      const r = team.getBoundingClientRect();
-      const p = clamp01(-r.top / Math.max(1, r.height - vh));
-      return clamp01((p - 0.06) / 0.66) * roles.length;
-    },
-    render: (x) => {
-      const whole = Math.floor(x); const frac = x - whole;
-      odo.style.setProperty('--odo', (whole + smooth(frac, 0.35, 1)).toFixed(4));
-      const n = Math.min(roles.length, Math.round(x));
-      if (n === shown) return;
-      shown = n;
-      roles.forEach((el, i) => el.classList.toggle('is-on', i < n));
-      lines.forEach((l, i) => l.classList.toggle('on', i === 0 || i <= n));
-      label.textContent = n === 0 ? 'profissional: só o tráfego' : n < roles.length ? 'profissionais' : 'profissionais pelo preço de 1';
-    },
-  });
-}
+// M7: lado a lado. Dispara uma vez quando a tabela aparece; o CSS escalona linhas e checks.
+const vs = document.querySelector('[data-vs]');
+if (vs) once([vs.querySelector('.vs__table')], () => vs.classList.add('is-run'), { threshold: 0.25 });
 
 // Rodapé: a folha de conteúdo sobe e ele aparece, com a palavra gigante subindo letra a letra.
 const footer = document.querySelector('[data-footer]');

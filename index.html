@@ -6,10 +6,47 @@
   <title>Hubclass · Educação e marketing para lojistas de iPhone</title>
   <meta name="description" content="A Hubclass é o ecossistema de educação e marketing do mercado mobile. Formação Varejo para estruturar e escalar sua loja de iPhone, Assessoria M7 para ter um time executando o marketing." />
   <meta name="theme-color" content="#04081A" />
+  <link rel="canonical" href="%SITE_URL%/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hubclass" />
+  <meta property="og:url" content="%SITE_URL%/" />
   <meta property="og:title" content="Hubclass · Sua loja de iPhone lucrando com método" />
   <meta property="og:description" content="Educação e marketing para lojistas do mercado mobile." />
-  <meta property="og:image" content="/media/hero-wide-poster.jpg" />
+  <meta property="og:image" content="%SITE_URL%/media/hero-wide-poster.jpg" />
+  <meta property="og:image:width" content="1600" />
+  <meta property="og:image:height" content="684" />
   <meta property="og:locale" content="pt_BR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "%SITE_URL%/#organization",
+        "name": "Hubclass",
+        "url": "%SITE_URL%/",
+        "logo": "%SITE_URL%/media/hubclass-mark.png",
+        "description": "Ecossistema de educação e marketing para lojistas do mercado mobile, com a Formação Varejo e a Assessoria M7.",
+        "sameAs": ["https://www.instagram.com/hubclass.br/"],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "sales",
+          "telephone": "+55-21-98719-3342",
+          "availableLanguage": "pt-BR"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "%SITE_URL%/#website",
+        "url": "%SITE_URL%/",
+        "name": "Hubclass",
+        "inLanguage": "pt-BR",
+        "publisher": { "@id": "%SITE_URL%/#organization" }
+      }
+    ]
+  }
+  </script>
   <link rel="icon" href="/media/favicon-64.png" type="image/png" />
   <link rel="apple-touch-icon" href="/media/apple-touch-icon.png" />
   <link rel="preload" as="image" href="/media/hero-tall-poster.jpg" media="(max-aspect-ratio: 9/10)" fetchpriority="high" />
@@ -66,7 +103,7 @@
         <div class="container intro__copy">
           <h1 class="intro__title" id="hero-title">
             <span class="line"><span>Sua loja de iPhone</span></span>
-            <span class="line"><span>lucrando <em class="ink" data-doodle="underline" data-doodle-late>com método.</em></span></span>
+            <span class="line"><span>lucrando <em>com método.</em></span></span>
           </h1>
           <a class="btn btn--primary intro__cta" data-magnet href="https://wa.me/5521987193342?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Hubclass%20e%20quero%20entender%20qual%20caminho%20faz%20sentido%20para%20a%20minha%20loja." target="_blank" rel="noopener">
             <span data-roll>Conversar no WhatsApp</span>
@@ -213,7 +250,7 @@
     <section class="people" id="quem-conduz" aria-labelledby="people-title">
       <div class="container">
         <header class="people__head">
-          <h2 class="people__title" id="people-title" data-reveal data-split>Lojistas ensinando <span class="ink" data-doodle="underline">lojistas.</span></h2>
+          <h2 class="people__title" id="people-title" data-reveal data-split>Lojistas ensinando <span class="emph">lojistas.</span></h2>
           <p class="people__lead" data-reveal style="--d: 0.2s">Os três sócios fundadores da Hubclass criaram a Você de iPhone, operação que a empresa apresenta com mais de R$ 10 milhões de faturamento anual. O método nasceu dentro da loja deles.</p>
         </header>
         <ul class="founders" data-reveal>
