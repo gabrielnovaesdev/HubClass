@@ -9,6 +9,7 @@ npm run build     # gera dist/
 npm run preview   # serve dist/ em http://localhost:4173
 npm run media       # regenera retratos, workbook e ícones a partir de _raw-media/
 npm run hero-video  # remonta o loop do hero e as fotos do filme (ffmpeg via npm)
+npm run method-film # remonta o filme do Método (capítulos) e o ambiente desfocado
 node scripts/qa.mjs shots|perf|record|checks [url]  # Processo Testador (Chrome instalado)
 node scripts/compare.mjs                              # comparativos antes | depois em qa/
 ```
@@ -17,7 +18,7 @@ node scripts/compare.mjs                              # comparativos antes | dep
 
 | Rota | Conteúdo | CTA principal |
 | --- | --- | --- |
-| `/` | Filme do Hub Experience em tela cheia que, na rolagem, se recolhe para um quadro; sintomas riscados à mão; dois caminhos com um "ou" desenhado; pilares do método preenchidos pela rolagem; quem conduz; dúvidas | WhatsApp do time comercial |
+| `/` | Filme do Hub Experience em tela cheia que, na rolagem, se recolhe para um quadro; sintomas riscados à mão; dois caminhos com um "ou" desenhado; a foto da sala que ganha vida, vira o filme do evento em tela cheia e recua para um quadro ao lado dos pilares do método; quem conduz; dúvidas | WhatsApp do time comercial |
 | `/formacao-varejo/` | "6" gigante circulado à mão (peso variável no cursor); jornada em trilha horizontal conduzida pela rolagem; "Para quem é" como autodiagnóstico de três toques (medidor à mão, veredito e caminhos alternativos); Workbook com tilt e inclusões como adesivos; dúvidas | WhatsApp, com mensagem sobre a Formação |
 | `/assessoria-m7/` | "Tráfego" que se esvazia até virar contorno e lead digitado ao vivo; comparação lado a lado "gestor de tráfego × Assessoria M7" nas oito funções, com checks à mão; origem com citação que acende na leitura; condições com checks desenhados; dúvidas | Formulário de diagnóstico gratuito (Yay Forms) |
 
@@ -32,7 +33,7 @@ Cabeçalho e rodapé ficam em `src/partials/` e são injetados em todas as pági
 
 ## Movimento
 
-- **Abertura** (referência: Spyker; só na primeira entrada pela home, uma vez por sessão; nunca com âncora, voltar/recarregar ou movimento reduzido): a marca se escreve no papel com um traço por baixo; a página sobe por baixo e empurra a marca até o cabeçalho (~3 s). Rolar, tocar ou teclar a apressa. O vídeo só carrega depois dela.
+- **Abertura** (referência: Spyker; só na primeira entrada pela home, uma vez por sessão; nunca com âncora, voltar/recarregar ou movimento reduzido): a marca surge no papel (o "H" aparece e a palavra sobe de uma máscara, sem traço); a página sobe por baixo e leva a marca até o cabeçalho (~3 s). Rolar, tocar ou teclar a apressa. O vídeo carrega durante a abertura, por baixo do papel, para já estar rodando quando a página aparece.
 - **Rolagem:** Lenis interpola a roda do mouse quadro a quadro (no toque, a rolagem é nativa). As cenas rodam num único laço de `requestAnimationFrame`, com leitura antes de escrita, e ainda perseguem o valor real com amortecimento exponencial (τ ≈ 70 ms).
 - **Texto:** títulos entram por linhas dentro de uma máscara; kickers e frases-chave são digitados ao vivo com cursor; parágrafos longos acendem com a leitura; links e botões rolam as letras no hover; palavras grandes mudam de peso perto do cursor.
 - **Cursor:** cartões com tilt e luz que segue o mouse; botões-ímã.
@@ -47,7 +48,23 @@ O Reel é um filme horizontal 2,35:1 gravado de lado no arquivo do Instagram (10
 - `hero-tall.webm/.mp4` (480×852, ~0,75 MB), recorte vertical com centro ajustado por plano;
 - pôsteres = primeiro quadro do loop, então a troca pôster → vídeo não salta.
 
-O vídeo só carrega depois da página, pausa fora da tela, não toca com economia de dados/2G e não toca sozinho com movimento reduzido.
+O vídeo carrega durante a abertura (ou logo após a página, sem abertura), aparece com uma troca longa a partir do pôster enquanto a imagem se assenta, pausa fora da tela, não toca com economia de dados/2G e não toca com movimento reduzido (fica o pôster). A hero não tem botões, controle de pausa nem crédito do filme.
+
+## O filme do Método
+
+Cena única e fixa na home (seção `#metodo`), conduzida pela rolagem:
+
+1. **Foto parada** no quadro ao lado da citação "A maior sala de aula do mercado mobile" (1º quadro do filme, um plano que não aparece no hero).
+2. **Entrada:** o quadro se abre até a tela inteira (janela em `clip-path`, mídia em `transform`) e a foto ganha vida.
+3. **Filme em tela cheia** (~14,5 s) com a linha do tempo dos capítulos: Marketing, Vendas e Gestão.
+4. **Saída:** o filme recua para um quadro ao lado dos pilares; cada pilar ativo toca o capítulo dele, com a legenda do que aparece no trecho.
+
+`scripts/build-method-film.mjs` monta o filme a partir dos dois Reels do Hub Experience (dia 1 = mesmo arquivo do hero; dia 2 = `_raw-media/reel/hub-experience-dia2-1080.mp4`), escolhendo planos pelo que se vê na tela (telão "com marca forte", painel "venda uma vez e receba todo mês", slide "resultado comprovado"). As marcas de capítulo que o script imprime vão em `data-chapters` no `index.html`. As falas dos Reels não viram legenda: a transcrição automática não é confiável o bastante para citar alguém.
+
+- `method-wide.webm/.mp4` (1600×684, ~2,6 MB) e `method-tall.webm/.mp4` (480×852, ~0,9 MB), carregados só perto da seção;
+- `method-ambient.webp` (1,7 KB): a foto já desfocada, para o fundo não usar filtro em tempo real.
+
+Sem movimento (ou quando a cena não cabe na tela, como celular deitado), a seção vira faixa + pilares em sequência, sem fixar.
 
 ## SEO técnico
 

@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "media": "node scripts/optimize-media.mjs",
-    "hero-video": "node scripts/build-hero-video.mjs"
+    "hero-video": "node scripts/build-hero-video.mjs",
+    "method-film": "node scripts/build-method-film.mjs"
   },
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",

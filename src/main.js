@@ -572,12 +572,37 @@ function pinByBottom(stage) {
   fit();
 }
 
-// Pilares do método: cada palavra se preenche, e só a descrição dela fica aberta.
-const pillarsPin = document.querySelector('[data-pillars]');
-if (pillarsPin) {
-  const items = [...pillarsPin.querySelectorAll('.pillar')];
+// Método: a foto da sala ganha vida e vira o filme do evento (tela cheia, com a linha do tempo dos
+// capítulos); depois o filme recua para um quadro ao lado dos pilares e passa a mostrar o capítulo
+// do pilar ativo. Uma única cena fixa: o quadro cobre o palco e o que aparece é uma janela (clip-path)
+// que vai do lugar ao lado da citação para a tela inteira e dela para o lugar ao lado dos pilares.
+const cine = document.querySelector('[data-cine]');
+if (cine) {
+  const stage = cine.querySelector('.cine__stage');
+  const intro = cine.querySelector('.cine__intro');
+  const method = cine.querySelector('.cine__method');
+  const introCopy = intro.querySelector('.cine__copy');
+  const methodCopy = method.querySelector('.cine__copy');
+  const slotA = cine.querySelector('[data-cine-slot="intro"]');
+  const slotB = cine.querySelector('[data-cine-slot="dock"]');
+  const frame = cine.querySelector('[data-cine-frame]');
+  const media = cine.querySelector('[data-cine-media]');
+  const video = cine.querySelector('[data-cine-video]');
+  const nowLabel = cine.querySelector('[data-cine-now]');
+  const bars = [...cine.querySelectorAll('[data-cine-bar]')];
+  const tag = cine.querySelector('[data-cine-tag]');
+  const items = [...cine.querySelectorAll('.pillar')];
   const names = items.map((li) => li.querySelector('.pillar__name'));
-  const index = pillarsPin.querySelector('[data-pillar-index]');
+  const index = cine.querySelector('[data-pillar-index]');
+  const edge = document.createElement('div');
+  edge.className = 'cine__edge';
+  edge.setAttribute('aria-hidden', 'true');
+
+  // Capítulos do filme (s): abertura, Marketing, Vendas, Gestão.
+  const marks = cine.dataset.chapters.split(',').map(Number);
+  const chapters = [[marks[0], marks[1]], [marks[1], marks[2]], [marks[2], marks[3]]];
+  const chapterNames = names.map((n) => n.textContent.trim());
+
   items.forEach((li) => {
     const body = li.querySelector('.pillar__body');
     const inner = document.createElement('div');
@@ -586,19 +611,185 @@ if (pillarsPin) {
     body.append(inner);
   });
   names.forEach((n) => n.setAttribute('data-text', n.textContent));
-  pinByBottom(pillarsPin.querySelector('.method__stage'));
+
+  // Fases, em fração da rolagem pela seção.
+  const REST = 0.07; const OPEN = 0.22; const FILM = 0.46; const DOCK = 0.58;
+
+  let pinned = false;
+  let geo = null; // { W, H, A, B }
+  const rel = (el) => { const s = stage.getBoundingClientRect(); const r = el.getBoundingClientRect(); return { x: r.left - s.left, y: r.top - s.top, w: r.width, h: r.height }; };
+  const measureGeo = () => { geo = { W: stage.clientWidth, H: stage.clientHeight, A: rel(slotA), B: rel(slotB) }; };
+
+  // A cena fixa só existe com movimento e quando as duas cenas cabem na tela; senão, faixa e pilares em sequência.
+  const setMode = () => {
+    const want = root.classList.contains('motion');
+    cine.classList.remove('cine--static');
+    let fits = want;
+    if (want) {
+      // Mede o pior caso: o pilar de texto mais longo aberto, sem transição.
+      const prev = items.map((li) => li.classList.contains('is-active'));
+      const longest = items.reduce((a, li) => (li.textContent.length > a.textContent.length ? li : a), items[0]);
+      cine.classList.add('cine--measure');
+      items.forEach((li) => li.classList.toggle('is-active', li === longest));
+      fits = intro.scrollHeight <= innerHeight + 1 && method.scrollHeight <= innerHeight + 1;
+      items.forEach((li, i) => li.classList.toggle('is-active', prev[i]));
+      cine.classList.remove('cine--measure');
+    }
+    pinned = want && fits;
+    cine.classList.toggle('cine--static', !pinned);
+    if (pinned) {
+      if (frame.parentElement !== stage) { stage.append(frame); stage.append(edge); }
+      measureGeo();
+    } else {
+      if (frame.parentElement !== slotA) slotA.append(frame);
+      edge.remove();
+      [frame, media, introCopy, methodCopy, edge].forEach((el) => el.removeAttribute('style'));
+      method.classList.remove('is-on');
+      items.forEach((li) => li.classList.add('is-active'));
+    }
+    cine.dataset.mode = pinned ? 'pinned' : 'static';
+  };
+  setMode();
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { setMode(); cineScene.drawn = undefined; kick(); }, 120); });
+  document.fonts?.ready.then(() => { setMode(); cineScene.drawn = undefined; kick(); });
+
+  /* ---------- Filme ---------- */
+  let loaded = false;
+  let mode = 'still'; // still | film | chapter
+  let chapter = 0;
+  let fading = false;
+  const load = () => {
+    if (loaded) return;
+    loaded = true;
+    const conn = navigator.connection;
+    if (conn?.saveData || /(^|-)2g$/.test(conn?.effectiveType || '')) return; // conexão lenta: ficam as fotos
+    const tall = matchMedia('(max-aspect-ratio: 9/10)').matches;
+    [['webm', 'video/webm'], ['mp4', 'video/mp4']].forEach(([ext, type]) => {
+      if (!video.canPlayType(type)) return;
+      const s = document.createElement('source');
+      s.src = `/media/method-${tall ? 'tall' : 'wide'}.${ext}`; s.type = type;
+      video.append(s);
+    });
+    video.preload = 'auto';
+    video.load();
+  };
+  video.addEventListener('playing', () => frame.classList.add('is-playing'));
+  const play = () => { if (!reduceMotion && loaded) video.play().catch(() => {}); };
+  let visible = false;
+  new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    if (visible) { load(); if (mode !== 'still') play(); } else video.pause();
+  }, { rootMargin: '60% 0px' }).observe(cine);
+
+  const toChapter = (c) => {
+    if (c === chapter && mode === 'chapter') return;
+    chapter = c;
+    const [a] = chapters[c];
+    // Troca curta: o quadro escurece, pula para o capítulo e volta.
+    fading = true;
+    frame.style.setProperty('--vid', '0');
+    setTimeout(() => {
+      video.currentTime = a + 0.02;
+      const back = () => { frame.style.setProperty('--vid', '1'); fading = false; };
+      video.addEventListener('seeked', back, { once: true });
+      setTimeout(back, 400);
+    }, 260);
+  };
+
+  const setMode2 = (m) => {
+    if (m === mode) return;
+    const prev = mode;
+    mode = m;
+    if (m === 'still') { video.pause(); frame.classList.remove('is-playing'); video.currentTime = 0; return; }
+    if (m === 'film' && prev === 'still') { video.currentTime = 0; }
+    if (m === 'chapter') toChapter(chapter);
+    play();
+  };
+
+  // Linha do tempo (tela cheia) e laço do capítulo (quadro dos pilares), quadro a quadro enquanto o filme roda.
+  let nowIdx = -2;
+  const syncVideo = () => {
+    if (!pinned || video.paused) return mode !== 'still' && visible && !video.ended && !reduceMotion;
+    const t = video.currentTime;
+    if (mode === 'film') {
+      if (t >= marks[3] - 0.05) video.currentTime = 0.01; // laço do filme inteiro
+      bars.forEach((b, i) => b.style.setProperty('--b', clamp01((t - chapters[i][0]) / (chapters[i][1] - chapters[i][0])).toFixed(4)));
+      const c = t < marks[0] ? -1 : chapters.findIndex(([a, b]) => t >= a && t < b);
+      if (c !== nowIdx) {
+        nowIdx = c;
+        bars.forEach((b, i) => b.classList.toggle('is-now', i === c));
+        nowLabel.textContent = c < 0 ? 'Hub Experience' : `${String(c + 1).padStart(2, '0')}  ${chapterNames[c]}`;
+        nowLabel.classList.remove('is-swap'); void nowLabel.offsetWidth; nowLabel.classList.add('is-swap');
+      }
+    } else if (mode === 'chapter' && !fading) {
+      const [a, b] = chapters[chapter];
+      if (t < a - 0.1 || t >= b - 0.04) video.currentTime = a + 0.02;
+    }
+    return true;
+  };
+  video.addEventListener('play', () => addTicker(syncVideo));
+
+  /* ---------- Rolagem ---------- */
   let active = -1;
-  scene({
+  const lerpRect = (a, b, t) => ({ x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t), w: lerp(a.w, b.w, t), h: lerp(a.h, b.h, t) });
+  const cineScene = scene({
     smooth: true,
-    measure: (vh) => { const r = pillarsPin.getBoundingClientRect(); return clamp01(-r.top / Math.max(1, r.height - vh)); },
+    measure: (vh) => {
+      if (!pinned) return 0;
+      const r = cine.getBoundingClientRect();
+      return clamp01(-r.top / Math.max(1, r.height - vh));
+    },
     render: (p) => {
-      names.forEach((n, i) => n.style.setProperty('--f', smooth(p, 0.04 + i * 0.3, 0.28 + i * 0.3).toFixed(4)));
-      const a = Math.min(items.length - 1, Math.max(0, Math.floor((p - 0.02) / 0.3)));
+      if (!pinned) return;
+      if (!geo) measureGeo();
+      const { W, H, A, B } = geo;
+      const F = { x: 0, y: 0, w: W, h: H };
+      const e = easeInOut(clamp01((p - REST) / (OPEN - REST)));
+      const d = easeInOut(clamp01((p - FILM) / (DOCK - FILM)));
+      const R = d > 0 ? lerpRect(F, B, d) : lerpRect(A, F, e);
+      const radius = (d > 0 ? d : 1 - e) * Math.min(28, Math.max(18, W * 0.02));
+      // Janela do quadro e mídia em "cover" dentro dela (a cena sempre enquadrada, sem reflow).
+      const s = Math.max(R.w / W, R.h / H);
+      const tx = R.x + R.w / 2 - (W * s) / 2; const ty = R.y + R.h / 2 - (H * s) / 2;
+      media.style.transform = `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) scale(${s.toFixed(5)})`;
+      const clip = { '--ct': R.y, '--cl': R.x, '--cr': W - R.x - R.w, '--cb': H - R.y - R.h, '--cr-r': radius };
+      for (const k in clip) { frame.style.setProperty(k, `${clip[k].toFixed(2)}px`); edge.style.setProperty(k, `${clip[k].toFixed(2)}px`); }
+      edge.style.setProperty('--edge', Math.min(1, (1 - e) + d).toFixed(3));
+
+      // Citação e convite saem para a esquerda, desfocando, enquanto a sala se abre.
+      const out = smooth(p, REST, REST + 0.08);
+      introCopy.style.opacity = (1 - out).toFixed(3);
+      introCopy.style.transform = `translate3d(${(-48 * out).toFixed(1)}px, 0, 0)`;
+      // Desfoque da saída só com mouse (em celular o filtro custa caro a cada quadro).
+      if (finePointer) introCopy.style.filter = out > 0.01 && out < 0.99 ? `blur(${(out * 8).toFixed(1)}px)` : '';
+
+      cine.style.setProperty('--deepen', (d * 0.82).toFixed(3));
+      cine.style.setProperty('--hud', (smooth(p, OPEN - 0.03, OPEN + 0.02) * (1 - smooth(p, FILM - 0.04, FILM + 0.01))).toFixed(3));
+      frame.style.setProperty('--hud', cine.style.getPropertyValue('--hud'));
+
+      // O método entra quando o filme se assenta no quadro.
+      const m = smooth(p, DOCK - 0.05, DOCK + 0.03);
+      method.classList.toggle('is-on', m > 0.001);
+      method.style.opacity = m.toFixed(3);
+      methodCopy.style.transform = `translate3d(0, ${((1 - m) * 28).toFixed(1)}px, 0)`;
+      frame.style.setProperty('--tag', smooth(p, DOCK - 0.01, DOCK + 0.05).toFixed(3));
+
+      // Pilares: cada nome se preenche e o quadro mostra o capítulo dele.
+      const q = clamp01((p - DOCK) / (0.97 - DOCK));
+      names.forEach((n, i) => n.style.setProperty('--f', smooth(q, i / 3 + 0.01, i / 3 + 0.2).toFixed(4)));
+      const a = Math.min(items.length - 1, Math.floor(q * 3));
       if (a !== active) {
         active = a;
         items.forEach((li, i) => li.classList.toggle('is-active', i === a));
         if (index) index.textContent = String(a + 1).padStart(2, '0');
+        tag.textContent = items[a].dataset.tag;
+        tag.classList.remove('is-swap'); void tag.offsetWidth; tag.classList.add('is-swap');
+        if (mode === 'chapter') toChapter(a);
+        else chapter = a;
       }
+
+      // Filme: parado na foto, rodando inteiro na tela cheia, em capítulos no quadro dos pilares.
+      setMode2(p < REST + 0.004 ? 'still' : d > 0.5 ? 'chapter' : 'film');
     },
   });
 }
@@ -749,7 +940,6 @@ if (opening) {
   const paper = loader.querySelector('[data-loader-paper]');
   const brand = loader.querySelector('[data-loader-brand]');
   const word = loader.querySelector('[data-loader-word]');
-  const swoosh = loader.querySelector('.loader__swoosh');
   const target = document.querySelector('[data-brand]');
   word.innerHTML = charSpans(word.textContent, 'lc');
   lenis?.stop();
@@ -790,14 +980,13 @@ if (opening) {
     if (phase === 2) return;
     phase = 2;
     dur = fast ? 650 : 1250;
-    swoosh.style.transition = 'opacity 0.3s'; swoosh.style.opacity = '0';
     requestAnimationFrame((now) => { t0 = now; requestAnimationFrame(rise); });
   };
   const start = () => {
     place();
     root.classList.add('loader-go');
     phase = 1;
-    setTimeout(() => startRise(rush), rush ? 250 : 1650);
+    setTimeout(() => startRise(rush), rush ? 250 : 1500);
   };
   // A marca só se escreve com a fonte pronta, para não trocar de desenho no meio.
   Promise.race([document.fonts?.ready || Promise.resolve(), new Promise((r) => setTimeout(r, 700))]).then(() => requestAnimationFrame(start));
@@ -820,10 +1009,9 @@ if (!reduceMotion) {
 
 /* ---------- Filme do hero ---------- */
 const video = document.querySelector('[data-hero-video]');
-const filmToggle = document.querySelector('[data-hero-toggle]');
 
 function setupFilm() {
-  if (!video || !filmToggle) return;
+  if (!video) return;
   const conn = navigator.connection;
   if (conn?.saveData || /(^|-)2g$/.test(conn?.effectiveType || '')) return; // Conexão lenta: o pôster é a abertura.
 
@@ -837,33 +1025,24 @@ function setupFilm() {
   });
 
   const film = video.closest('[data-film]');
-  const label = filmToggle.querySelector('[data-hero-toggle-label]');
-  let userPaused = reduceMotion;
-  const setPaused = (paused) => {
-    filmToggle.setAttribute('aria-pressed', String(paused));
-    label.textContent = paused ? 'Reproduzir vídeo' : 'Pausar vídeo';
-  };
-  const play = () => video.play().then(() => setPaused(false)).catch(() => setPaused(true));
+  // Movimento reduzido: fica o pôster, sem reprodução automática.
+  const play = () => { if (!reduceMotion) video.play().catch(() => {}); };
 
-  video.addEventListener('playing', () => film.classList.add('is-playing'));
-  video.addEventListener('loadeddata', () => { filmToggle.hidden = false; }, { once: true });
-  video.addEventListener('error', () => { filmToggle.hidden = true; }, true);
-  filmToggle.addEventListener('click', () => {
-    if (video.paused) { userPaused = false; play(); } else { userPaused = true; video.pause(); setPaused(true); }
-  });
+  // O vídeo só aparece quando já está rodando, com uma troca longa a partir do pôster (que é o 1º quadro).
+  video.addEventListener('playing', () => film.classList.add('is-playing'), { once: true });
 
   new IntersectionObserver(([entry]) => {
     if (!entry.isIntersecting) video.pause();
-    else if (!userPaused) play();
+    else play();
   }).observe(film);
 
   video.preload = 'auto';
   video.load();
-  setPaused(userPaused);
-  if (!userPaused) play();
+  play();
 }
 
-// O vídeo só começa a carregar depois da abertura, para não disputar quadros com ela.
-const startFilm = () => (opening && !root.classList.contains('intro-done') ? addEventListener('hc:opened', () => setTimeout(setupFilm, 150), { once: true }) : setupFilm());
-if (document.readyState === 'complete') startFilm();
+// Na primeira visita o vídeo carrega durante a abertura (por baixo do papel), para já estar rodando quando a
+// página sobe; sem abertura, carrega assim que a página termina de carregar.
+const startFilm = () => setupFilm();
+if (opening || document.readyState === 'complete') startFilm();
 else addEventListener('load', startFilm, { once: true });

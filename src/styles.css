@@ -373,23 +373,21 @@ p { text-wrap: pretty; }
   visibility: hidden;
 }
 .loader__mark { width: 24px; height: auto; }
-.loader__word { font-family: var(--font-display); font-weight: 700; font-size: 1.32rem; letter-spacing: -0.04em; color: var(--ink); display: inline-flex; }
-.loader__word .lc { display: inline-block; }
-.loader__swoosh {
-  position: absolute; left: 30px; right: -6px; top: 82%; height: 0.62em; width: auto;
-  overflow: visible;
-  filter: url(#hc-rough);
+.loader__word {
+  font-family: var(--font-display); font-weight: 700; font-size: 1.32rem; letter-spacing: -0.04em; color: var(--ink);
+  display: inline-flex;
+  /* Máscara: as letras sobem de baixo de uma linha invisível, sem traço nem giro. */
+  overflow: hidden; padding: 0.08em 0.04em 0.14em; margin: -0.08em -0.04em -0.14em;
 }
-.loader__swoosh path { fill: none; stroke: var(--blue); stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
+.loader__word .lc { display: inline-block; }
 .loader-go .loader__brand { visibility: visible; }
-.loader-go .loader__mark { animation: mark-in 0.9s var(--ease-spring) both; }
-.loader-go .loader__word .lc { animation: letter-in 0.8s var(--ease) both; animation-delay: calc(0.18s + var(--i) * 55ms); }
-.loader-go .loader__swoosh path { animation: draw 0.9s var(--ease-draw) 0.75s forwards; }
+.loader-go .loader__mark { animation: mark-in 0.9s var(--ease) both; }
+.loader-go .loader__word .lc { animation: letter-in 0.9s var(--ease) both; animation-delay: calc(0.22s + var(--i) * 32ms); }
 .opening .site-header { opacity: 0; }
 .opening.hero-in .site-header { opacity: 1; transition: opacity 0.6s var(--ease), translate 0.6s var(--ease); }
 .opening:not(.intro-done) .site-header .brand { opacity: 0; }
-@keyframes mark-in { from { opacity: 0; transform: scale(0.3) rotate(-24deg); } to { opacity: 1; transform: none; } }
-@keyframes letter-in { from { opacity: 0; transform: translate3d(0, 0.6em, 0) rotate(8deg); } to { opacity: 1; transform: none; } }
+@keyframes mark-in { from { opacity: 0; transform: translate3d(0, 0.35em, 0) scale(0.92); } to { opacity: 1; transform: none; } }
+@keyframes letter-in { from { transform: translate3d(0, 110%, 0); } to { transform: none; } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @keyframes loader-failsafe { to { visibility: hidden; opacity: 0; } }
 
@@ -404,8 +402,12 @@ p { text-wrap: pretty; }
   width: 100%; height: 100%;
   object-fit: cover;
 }
-.intro__video { opacity: 0; transition: opacity 0.6s var(--ease); }
+.intro__video { opacity: 0; transition: opacity 1.2s var(--ease); }
 .intro__film.is-playing .intro__video { opacity: 1; }
+/* A imagem se assenta devagar ao aparecer (pôster e vídeo juntos), para o quadro nunca parecer parado. */
+.motion .intro__poster, .motion .intro__video { animation: film-settle 3.2s var(--ease) both; }
+.opening:not(.hero-in) :is(.intro__poster, .intro__video) { animation-play-state: paused; }
+@keyframes film-settle { from { scale: 1.1; } to { scale: 1; } }
 
 .intro__shade {
   position: absolute; inset: 0 0 auto; height: 100svh; min-height: 540px;
@@ -431,29 +433,6 @@ p { text-wrap: pretty; }
 .intro__title .line > span { display: inline-block; }
 .intro__title em { font-style: normal; color: var(--cyan); }
 .intro__title .doodle--underline { bottom: -0.06em; }
-.intro__cta { margin-top: clamp(22px, 3.5svh, 36px); }
-
-.intro__credit {
-  position: absolute; left: var(--gutter); bottom: 22px;
-  font-size: 0.75rem; color: var(--muted);
-}
-.film-toggle {
-  position: absolute; z-index: 4; right: var(--gutter); bottom: 16px;
-  width: 44px; height: 44px;
-  display: grid; place-items: center;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(4, 8, 26, 0.5);
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  color: #fff; cursor: pointer;
-  transition: background-color 0.2s, transform 0.3s var(--ease-spring);
-}
-.film-toggle[hidden] { display: none; }
-.film-toggle:hover { background: rgba(4, 8, 26, 0.8); transform: scale(1.08); }
-.film-toggle svg { width: 18px; height: 18px; }
-.film-toggle .i-play { display: none; }
-.film-toggle[aria-pressed='true'] .i-play { display: block; }
-.film-toggle[aria-pressed='true'] .i-pause { display: none; }
 .intro__cue { display: none; }
 
 .note {
@@ -480,7 +459,6 @@ p { text-wrap: pretty; }
 .motion .intro { height: 290svh; }
 .motion .intro__stage { position: sticky; top: 0; height: 100svh; min-height: 540px; overflow: hidden; translate: 0 var(--rise, 0px); }
 .motion .intro__film { position: absolute; inset: 0; height: auto; min-height: 0; will-change: clip-path, transform; }
-.motion .intro__credit { opacity: var(--z, 0); }
 .motion .intro__cue {
   display: block;
   position: absolute; left: 50%; bottom: 18px;
@@ -534,12 +512,11 @@ p { text-wrap: pretty; }
   .intro__copy { top: calc(var(--header-h) + clamp(16px, 4svh, 40px)); }
 }
 
-/* Título e CTA entram por linhas; na primeira visita, esperam a abertura terminar. */
+/* O título entra por linhas; na primeira visita, espera a abertura terminar. */
 .motion .intro__title .line > span { animation: line-up 1.1s var(--ease) both; }
 .motion .intro__title .line:nth-child(1) > span { animation-delay: 0.15s; }
 .motion .intro__title .line:nth-child(2) > span { animation-delay: 0.27s; }
-.motion .intro__cta { animation: fade-up 0.9s var(--ease) 0.55s both; }
-.opening:not(.hero-in) :is(.intro__title .line > span, .intro__cta) { animation-play-state: paused; }
+.opening:not(.hero-in) .intro__title .line > span { animation-play-state: paused; }
 @keyframes line-up { from { transform: translate3d(0, 110%, 0) rotate(3deg); } to { transform: none; } }
 @keyframes fade-up { from { opacity: 0; transform: translate3d(0, 16px, 0); } to { opacity: 1; transform: none; } }
 .motion .crumb { animation: fade-up 0.8s var(--ease) 0.1s both; }
@@ -547,7 +524,8 @@ p { text-wrap: pretty; }
 /* ==========================================================================
    HOME · 2. Problema — declaração grande; os sintomas são riscados à mão
    ========================================================================== */
-.problem { padding-block: clamp(96px, 12vw, 200px) clamp(96px, 10vw, 168px); background: var(--ink); }
+/* overflow-x: clip — o círculo à mão em "método." encosta na borda da tela em ~328px. */
+.problem { padding-block: clamp(96px, 12vw, 200px) clamp(96px, 10vw, 168px); background: var(--ink); overflow-x: clip; }
 .problem__title {
   font-size: clamp(2.4rem, 0.8rem + 6.4vw, 6.8rem);
   font-weight: 700;
@@ -645,7 +623,8 @@ p { text-wrap: pretty; }
 .offer .btn { margin-top: auto; }
 .offer__fit + .btn { margin-top: 28px; }
 
-.paths__or { position: relative; display: grid; place-items: center; min-height: 110px; }
+/* z-index: as setas saem do "ou" e apontam para os cartões; ficam por cima deles (os cartões têm transform próprio). */
+.paths__or { position: relative; z-index: 2; display: grid; place-items: center; min-height: 110px; }
 .paths__or-word { position: relative; z-index: 1; font-size: 3.4rem; color: var(--blue); rotate: -6deg; }
 .paths__or-ring { position: absolute; width: 118px; height: 118px; left: 50%; top: 50%; translate: -50% -50%; --draw-t: 1s; }
 .paths__or-arrow { display: none; }
@@ -665,42 +644,80 @@ p { text-wrap: pretty; }
 }
 
 /* ==========================================================================
-   HOME · 4. Método — a sala se abre; os pilares se preenchem um por vez
+   HOME · 4. Método — a foto da sala ganha vida, vira o filme do evento e
+   recua para um quadro que conversa com os três pilares
    ========================================================================== */
 .method { background: var(--deep); }
-.method__band { position: relative; }
-.method__band img { width: 100%; height: auto; aspect-ratio: 1600 / 684; object-fit: cover; }
-.method__band::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(13, 22, 96, 0) 40%, var(--deep) 100%);
-}
-.method__band figcaption {
-  position: absolute; left: 0; right: 0; bottom: clamp(16px, 4vw, 48px); z-index: 1;
-  font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(1.25rem, 0.9rem + 1.8vw, 2.5rem);
-  letter-spacing: -0.03em; line-height: 1.1;
-}
-.method__quote { display: block; }
-.method__source {
-  display: block; margin-top: 8px;
-  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan);
-}
+.cine { position: relative; isolation: isolate; }
+.cine__stage { position: relative; overflow: hidden; }
 
-.method__pin { position: relative; }
-.method__stage { padding-block: clamp(64px, 8vw, 120px); }
-.method__grid { display: grid; gap: 40px; }
-.method__title { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem); max-width: 22ch; }
-.method__index { margin-top: 20px; font-family: var(--font-display); font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; letter-spacing: 0.06em; }
+/* Ambiente: a mesma foto, já desfocada no arquivo (sem filtro em tempo real), sob um véu no tom da marca. */
+.cine__ambient {
+  position: absolute; inset: 0; z-index: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.cine__veil {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(180deg, var(--ink) 0%, rgba(4, 8, 26, 0) 24%, rgba(13, 22, 96, 0) 72%, var(--deep) 100%),
+    linear-gradient(90deg, rgba(4, 8, 26, 0.84) 0%, rgba(8, 14, 60, 0.62) 46%, rgba(13, 22, 96, 0.4) 100%);
+}
+/* Na cena dos pilares, o ambiente assenta no azul da seção. */
+.cine__veil::after { content: ''; position: absolute; inset: 0; background: var(--deep); opacity: var(--deepen, 0); }
+
+.cine__grid { position: relative; z-index: 2; display: grid; gap: clamp(32px, 5vw, 56px); align-items: center; }
+.cine__copy { font-family: var(--font-display); }
+
+.method__source {
+  display: inline-flex; align-items: center; gap: 14px;
+  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan);
+}
+.method__source::before { content: ''; width: 32px; height: 1px; background: currentColor; }
+.method__quote {
+  display: block; margin-top: 20px;
+  font-size: clamp(2rem, 1.1rem + 3.4vw, 4.2rem); font-weight: 700;
+  letter-spacing: -0.04em; line-height: 1.04;
+  max-width: 14ch; text-wrap: balance;
+}
+.method__quote em { font-style: normal; color: var(--cyan); }
+.cine__hint { display: none; }
+
+/* O quadro. Fora da cena fixa, é uma foto (ou o filme) num cartão arredondado. */
+.cine__slot { position: relative; aspect-ratio: 16 / 10; }
+.cine__frame {
+  position: absolute; inset: 0; overflow: hidden;
+  border-radius: clamp(18px, 2vw, 28px);
+  background: var(--ink);
+  box-shadow: 0 40px 90px -30px rgba(2, 4, 16, 0.85), inset 0 0 0 1px rgba(234, 240, 255, 0.14);
+}
+.cine__media { position: absolute; inset: 0; transform-origin: 0 0; }
+.cine__poster, .cine__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cine__video { opacity: 0; transition: opacity 0.9s var(--ease); }
+.cine__frame.is-playing .cine__video { opacity: var(--vid, 1); }
+.cine__shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(0deg, rgba(4, 8, 26, 0.88) 0%, rgba(4, 8, 26, 0.35) 30%, rgba(4, 8, 26, 0) 55%),
+              linear-gradient(180deg, rgba(4, 8, 26, 0.5) 0%, rgba(4, 8, 26, 0) 22%);
+  opacity: var(--hud, 0);
+}
+.cine__hud, .cine__tag { display: none; }
+
+.cine__kicker { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan); }
+.method__title { margin-top: 14px; font-size: clamp(1.4rem, 1rem + 1.3vw, 2.2rem); max-width: 24ch; line-height: 1.12; }
+.method__index { margin-top: 22px; font-family: var(--font-display); font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; letter-spacing: 0.06em; }
 .method__index span { color: var(--cyan); }
-.pillars { display: grid; gap: clamp(10px, 1.6vw, 22px); }
+
+.pillars { display: grid; gap: clamp(6px, 1vw, 12px); margin-top: clamp(24px, 3.5svh, 40px); }
 .pillar__name {
   position: relative;
-  font-size: clamp(2.8rem, 1rem + 7vw, 7.4rem);
+  font-size: clamp(2.2rem, 1rem + 3.2vw, 4.4rem);
   font-weight: 700;
   letter-spacing: -0.05em;
-  line-height: 0.95;
+  line-height: 1;
   color: rgba(234, 240, 255, 0.16);
   width: fit-content;
+  transition: color 0.5s var(--ease);
 }
 /* O preenchimento é uma cópia do texto recortada da esquerda para a direita. */
 .pillar__name::after {
@@ -710,27 +727,128 @@ p { text-wrap: pretty; }
   -webkit-background-clip: text; background-clip: text; color: transparent;
   clip-path: inset(-0.2em calc((1 - var(--f, 0)) * 100%) -0.2em 0);
 }
-html:not(.motion) .pillar__name { color: #fff; }
-html:not(.motion) .pillar__name::after { display: none; }
 .pillar__body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.7s var(--ease), opacity 0.5s var(--ease); opacity: 0; }
 .pillar__body > * { min-height: 0; }
 .pillar__inner { overflow: hidden; }
-.pillar.is-active .pillar__body, html:not(.motion) .pillar__body { grid-template-rows: 1fr; opacity: 1; }
-.pillar__body p { max-width: 40ch; color: var(--soft); }
-.pillar__claim { font-weight: 700; color: var(--cyan) !important; margin: 14px 0 6px; }
-.pillar__body p:last-child { padding-bottom: 10px; }
+.pillar.is-active .pillar__body { grid-template-rows: 1fr; opacity: 1; }
+.pillar__body p { max-width: 40ch; color: var(--soft); font-family: var(--font-body); }
+.pillar__claim { font-family: var(--font-display) !important; font-weight: 700; color: var(--cyan) !important; margin: 10px 0 6px; }
+.pillar__body p:last-child { padding-bottom: 8px; }
 
-.motion .method__pin { height: 330svh; }
-/* Em telas baixas o palco cresce além de 100svh e prende pela base (--stage-top, ver pinByBottom no JS). */
-.motion .method__stage { position: sticky; top: var(--stage-top, 0px); min-height: 100svh; display: grid; align-items: center; padding-block: var(--header-h) 24px; }
+/* ---------- Sem a cena fixa (sem JS, movimento reduzido, tela baixa): faixa e pilares, um após o outro ---------- */
+:is(html:not(.motion) .cine, .cine--static) .cine__intro { padding-block: clamp(88px, 11vw, 168px) clamp(56px, 7vw, 96px); }
+:is(html:not(.motion) .cine, .cine--static) .cine__method { padding-block: 0 clamp(88px, 11vw, 160px); }
+:is(html:not(.motion) .cine, .cine--static) .cine__method .cine__slot { display: none; }
+:is(html:not(.motion) .cine, .cine--static) .pillar__name { color: #fff; }
+:is(html:not(.motion) .cine, .cine--static) .pillar__name::after { display: none; }
+:is(html:not(.motion) .cine, .cine--static) .pillar__body { grid-template-rows: 1fr; opacity: 1; }
+:is(html:not(.motion) .cine, .cine--static) .pillars { gap: 28px; }
+:is(html:not(.motion) .cine, .cine--static) .method__index { display: none; }
+
+/* ---------- A cena fixa ---------- */
+.motion .cine:not(.cine--static) { height: 640svh; }
+.motion .cine:not(.cine--static) .cine__stage { position: sticky; top: 0; height: 100svh; }
+.motion .cine:not(.cine--static) .cine__grid {
+  position: absolute; inset: 0;
+  padding-top: var(--header-h); padding-bottom: 24px;
+  align-content: center;
+}
+/* As duas cenas ocupam a mesma tela; o JS controla a passagem de uma para a outra. */
+.motion .cine:not(.cine--static) .cine__method { z-index: 4; opacity: 0; visibility: hidden; }
+.motion .cine:not(.cine--static) .cine__method.is-on { visibility: visible; }
+.motion .cine:not(.cine--static) .cine__intro .cine__copy { will-change: opacity, transform; }
+/* O quadro sai do lugar e passa a cobrir o palco inteiro; o que aparece é decidido pelo recorte (clip-path). */
+.motion .cine:not(.cine--static) .cine__frame {
+  position: absolute; z-index: 3; inset: 0;
+  border-radius: 0; box-shadow: none; background: transparent;
+  clip-path: inset(var(--ct, 0px) var(--cr, 0px) var(--cb, 0px) var(--cl, 0px) round var(--cr-r, 0px));
+  will-change: clip-path;
+}
+.motion .cine:not(.cine--static) .cine__media { will-change: transform; }
+.motion .cine:not(.cine--static) .cine__poster,
+.motion .cine:not(.cine--static) .cine__video { inset: 0; }
+/* Filete do quadro (o recorte cortaria uma sombra; o filete acompanha o recorte). */
+.motion .cine:not(.cine--static) .cine__edge {
+  position: absolute; z-index: 3; pointer-events: none;
+  left: var(--cl, 0px); top: var(--ct, 0px); right: var(--cr, 0px); bottom: var(--cb, 0px);
+  border-radius: var(--cr-r, 0px);
+  box-shadow: inset 0 0 0 1px rgba(234, 240, 255, calc(0.16 * var(--edge, 1))), 0 50px 100px -40px rgba(2, 4, 16, calc(0.9 * var(--edge, 1)));
+}
+
+/* Convite para rolar, sob a citação. */
+.motion .cine:not(.cine--static) .cine__hint {
+  display: inline-flex; align-items: center; gap: 12px; margin-top: clamp(24px, 4svh, 44px);
+  font-family: var(--font-body); font-size: 0.85rem; color: var(--muted); letter-spacing: 0.02em;
+}
+.cine__hint-line { position: relative; width: 44px; height: 1px; background: rgba(234, 240, 255, 0.22); overflow: hidden; }
+.cine__hint-line::after { content: ''; position: absolute; inset: 0; width: 40%; background: var(--cyan); animation: hint 2.4s var(--ease) infinite; }
+@keyframes hint { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+
+/* Linha do tempo do filme em tela cheia. */
+.motion .cine:not(.cine--static) .cine__hud {
+  display: grid; gap: 18px;
+  position: absolute; left: var(--gutter); right: var(--gutter); bottom: clamp(24px, 6svh, 56px);
+  max-width: var(--max); margin-inline: auto;
+  opacity: var(--hud, 0); transform: translateY(calc((1 - var(--hud, 0)) * 18px));
+  pointer-events: none;
+}
+.cine__now { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.6rem, 1rem + 2.4vw, 3.2rem); letter-spacing: -0.04em; line-height: 1; overflow: hidden; }
+.cine__now-label { display: inline-block; }
+.cine__now-label.is-swap { animation: now-swap 0.7s var(--ease) both; }
+@keyframes now-swap { from { transform: translate3d(0, 100%, 0); opacity: 0; } to { transform: none; opacity: 1; } }
+.cine__bars { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(10px, 1.4vw, 18px); list-style: none; }
+.cine__bars li { display: grid; gap: 10px; font-family: var(--font-display); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(234, 240, 255, 0.55); transition: color 0.4s; }
+.cine__bars li.is-now { color: #fff; }
+.cine__bars i { position: relative; display: block; height: 2px; border-radius: 2px; background: rgba(234, 240, 255, 0.22); overflow: hidden; }
+.cine__bars i::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #fff, var(--cyan)); transform-origin: 0 50%; transform: scaleX(var(--b, 0)); }
+
+/* Legenda do quadro na cena dos pilares: o que aparece no trecho. */
+.motion .cine:not(.cine--static) .cine__tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  position: absolute; left: calc(var(--cl, 0px) + 18px); bottom: calc(var(--cb, 0px) + 16px);
+  max-width: calc(100% - var(--cl, 0px) - var(--cr, 0px) - 36px);
+  padding: 8px 14px 8px 12px; border-radius: 999px;
+  background: rgba(4, 8, 26, 0.55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  font-size: 0.82rem; font-weight: 600; color: #fff;
+  opacity: var(--tag, 0); transform: translateY(calc((1 - var(--tag, 0)) * 10px));
+  pointer-events: none;
+}
+.cine__tag-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 0 4px rgba(34, 228, 242, 0.2); flex: none; animation: rec 1.6s ease-in-out infinite; }
+@keyframes rec { 50% { box-shadow: 0 0 0 7px rgba(34, 228, 242, 0); } }
+[data-cine-tag].is-swap { display: inline-block; animation: now-swap 0.6s var(--ease) both; }
+
 @media (min-width: 900px) {
-  .method__grid { grid-template-columns: 4fr 8fr; gap: 64px; align-items: center; }
-  .pillar__body p { margin-left: clamp(6px, 1vw, 14px); }
+  .cine__grid { grid-template-columns: 5fr 7fr; gap: clamp(48px, 6vw, 96px); }
+  .pillar__body p { margin-left: clamp(4px, 0.6vw, 10px); }
+  /* Sem a cena fixa, os três pilares lado a lado (o quadro da vitrine não existe nesse modo). */
+  :is(html:not(.motion) .cine, .cine--static) .cine__method { grid-template-columns: 1fr; }
+  :is(html:not(.motion) .cine, .cine--static) .pillars { grid-template-columns: repeat(3, 1fr); gap: clamp(32px, 4vw, 64px); }
 }
 @media (max-width: 899px) {
-  .motion .method__stage { align-items: start; padding-top: calc(var(--header-h) + 24px); }
-  .method__grid { gap: 28px; }
+  .motion .cine:not(.cine--static) { height: 580svh; }
+  .motion .cine:not(.cine--static) .cine__grid { align-content: start; padding-top: calc(var(--header-h) + 20px); gap: 24px; }
+  .motion .cine:not(.cine--static) .cine__intro { align-content: center; }
+  /* No celular o quadro dos pilares fica em cima e o texto embaixo. */
+  .cine__method .cine__slot { order: -1; }
+  .pillars { margin-top: 18px; }
+  .pillar__name { font-size: clamp(1.9rem, 1.2rem + 3vw, 2.6rem); }
+  .method__title { font-size: clamp(1.25rem, 1rem + 1.2vw, 1.6rem); }
+  .cine__bars li { font-size: 0.68rem; letter-spacing: 0.1em; }
+  /* Tablet em pé: o quadro não precisa da largura toda. */
+  .cine__slot { width: min(100%, 560px); }
 }
+/* Celulares baixos: quadro mais baixo e tipos um pouco menores para a cena caber inteira. */
+@media (max-width: 899px) and (max-height: 760px) {
+  .motion .cine:not(.cine--static) .cine__grid { padding-top: calc(var(--header-h) + 10px); gap: 16px; }
+  .motion .cine:not(.cine--static) .cine__slot { aspect-ratio: 2 / 1; }
+  .motion .cine:not(.cine--static) .pillars { margin-top: 10px; gap: 2px; }
+  .motion .cine:not(.cine--static) .pillar__name { font-size: 1.75rem; }
+  .motion .cine:not(.cine--static) .method__title { font-size: 1.12rem; margin-top: 8px; }
+  .motion .cine:not(.cine--static) .method__index { margin-top: 10px; }
+  .motion .cine:not(.cine--static) .pillar__body p { font-size: 0.92rem; }
+}
+/* Medição do pior caso (JS): sem transições. */
+.cine--measure .pillar__body { transition: none !important; }
 
 /* ==========================================================================
    HOME · 5. Quem conduz — três sócios, mesmo protagonismo

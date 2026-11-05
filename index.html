@@ -72,15 +72,12 @@
   <script type="module" src="/src/main.js"></script>
 </head>
 <body class="page-home">
-  <!-- Abertura: a marca se escreve no papel; depois a página sobe por baixo e a empurra para o cabeçalho. -->
+  <!-- Abertura: a marca surge no papel; depois a página sobe por baixo e a leva para o cabeçalho. -->
   <div class="loader" aria-hidden="true" data-loader>
     <div class="loader__paper" data-loader-paper></div>
     <div class="loader__brand" data-loader-brand>
       <img class="loader__mark" src="/media/hubclass-mark.png" alt="" width="36" height="48" />
       <span class="loader__word" data-loader-word>hubclass</span>
-      <svg class="loader__swoosh" viewBox="0 0 220 40" preserveAspectRatio="none">
-        <path pathLength="1" d="M6 24 C 40 14, 92 10, 140 14 C 170 17, 196 22, 214 12" />
-      </svg>
     </div>
   </div>
 
@@ -105,10 +102,6 @@
             <span class="line"><span>Sua loja de iPhone</span></span>
             <span class="line"><span>lucrando <em>com método.</em></span></span>
           </h1>
-          <a class="btn btn--primary intro__cta" data-magnet href="https://wa.me/5521987193342?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Hubclass%20e%20quero%20entender%20qual%20caminho%20faz%20sentido%20para%20a%20minha%20loja." target="_blank" rel="noopener">
-            <span data-roll>Conversar no WhatsApp</span>
-            <svg class="btn__icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
         </div>
 
         <ol class="intro__notes container">
@@ -117,12 +110,6 @@
           <li class="note note--3"><strong class="note__figure">+1.000</strong> alunos lucrando com método, segundo o perfil oficial @hubclass.br.</li>
         </ol>
 
-        <p class="intro__credit">Hub Experience · filme de @sampaio.filmes</p>
-        <button class="film-toggle" type="button" hidden data-hero-toggle aria-pressed="false">
-          <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10M13 5v10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-          <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5.5v9l7.5-4.5z" fill="currentColor"/></svg>
-          <span class="sr-only" data-hero-toggle-label>Pausar vídeo</span>
-        </button>
         <span class="intro__cue" aria-hidden="true"><span></span></span>
       </div>
     </section>
@@ -202,38 +189,69 @@
       </div>
     </section>
 
-    <!-- 4. Método: a sala se abre com a rolagem; os três pilares se preenchem um por vez. -->
-    <section class="method" id="metodo" aria-labelledby="method-title">
-      <figure class="method__band" data-unveil="wide">
-        <img src="/media/film-room-1600.webp" srcset="/media/film-room-960.webp 960w, /media/film-room-1600.webp 1600w"
-             sizes="100vw" width="1600" height="684" loading="lazy" decoding="async"
-             alt="Salão do Hub Experience lotado diante do telão." />
-        <figcaption class="container"><span class="method__quote" data-type>“A maior sala de aula do mercado mobile.”</span> <span class="method__source">Hub Experience</span></figcaption>
-      </figure>
+    <!-- 4. Método: a foto da sala ganha vida e vira o filme do evento; o filme recua para um quadro e
+         conversa com os três pilares, mostrando o capítulo de cada um. -->
+    <section class="method cine" id="metodo" aria-labelledby="method-title" data-cine data-chapters="1.34,5.71,10.51,14.52">
+      <div class="cine__stage">
+        <img class="cine__ambient" src="/media/method-ambient.webp" width="320" height="137" loading="lazy" decoding="async" alt="" aria-hidden="true" />
+        <div class="cine__veil" aria-hidden="true"></div>
 
-      <div class="method__pin" data-pillars>
-        <div class="method__stage">
-          <div class="container method__grid">
-            <div class="method__side">
-              <h2 class="method__title" id="method-title" data-reveal data-split>Método Lojas Lucrativas: vender mais caro, mais vezes, com o lucro que a loja merece.</h2>
-              <p class="method__index" aria-hidden="true"><span data-pillar-index>01</span> / 03</p>
+        <!-- Cena 1: a faixa. A citação à esquerda; à direita, o quadro com a foto parada. -->
+        <div class="container cine__grid cine__intro">
+          <div class="cine__copy">
+            <span class="method__source">Hub Experience</span>
+            <p class="method__quote" data-reveal data-split>“A maior sala de aula do <em>mercado mobile.</em>”</p>
+            <p class="cine__hint" aria-hidden="true"><span class="cine__hint-line"></span>Role para entrar no evento</p>
+          </div>
+          <div class="cine__slot" data-cine-slot="intro">
+            <!-- O quadro: foto parada → filme em tela cheia → vitrine dos pilares. -->
+            <div class="cine__frame" data-cine-frame>
+              <div class="cine__media" data-cine-media>
+                <picture>
+                  <source media="(max-aspect-ratio: 9/10)" srcset="/media/method-tall-poster.jpg" width="480" height="852" />
+                  <img class="cine__poster" src="/media/method-wide-poster.jpg" width="1600" height="684" loading="lazy" decoding="async"
+                       alt="Plateia lotada no salão do Hub Experience." />
+                </picture>
+                <video class="cine__video" muted playsinline preload="none" aria-hidden="true" tabindex="-1" data-cine-video></video>
+              </div>
+              <div class="cine__shade" aria-hidden="true"></div>
+
+              <!-- Em tela cheia: o capítulo em curso e a linha do tempo do filme. -->
+              <div class="cine__hud" aria-hidden="true">
+                <p class="cine__now"><span class="cine__now-label" data-cine-now>Hub Experience</span></p>
+                <ol class="cine__bars">
+                  <li data-cine-bar><i></i><span>Marketing</span></li>
+                  <li data-cine-bar><i></i><span>Vendas</span></li>
+                  <li data-cine-bar><i></i><span>Gestão</span></li>
+                </ol>
+              </div>
+              <!-- No quadro dos pilares: o que aparece no trecho. -->
+              <p class="cine__tag" aria-hidden="true"><span class="cine__tag-dot"></span><span data-cine-tag>No telão: “com marca forte”</span></p>
             </div>
+          </div>
+        </div>
+
+        <!-- Cena 3: o método, conversando com o filme. -->
+        <div class="container cine__grid cine__method">
+          <div class="cine__copy">
+            <p class="cine__kicker">Do palco para a sua loja</p>
+            <h2 class="method__title" id="method-title" data-reveal data-split>Método Lojas Lucrativas: vender mais caro, mais vezes, com o lucro que a loja merece.</h2>
             <ul class="pillars">
-              <li class="pillar">
+              <li class="pillar" data-tag="No telão: “com marca forte”">
                 <h3 class="pillar__name">Marketing</h3>
                 <div class="pillar__body">
                   <p class="pillar__claim">Uma marca forte de verdade.</p>
                   <p>Posicionamento com proposta única de valor, vários canais de venda e conteúdo que diferencia sua loja da concorrência.</p>
                 </div>
               </li>
-              <li class="pillar">
+              <li class="pillar" data-tag="No estande: “venda uma vez e receba todo mês”">
                 <h3 class="pillar__name">Vendas</h3>
                 <div class="pillar__body">
                   <p class="pillar__claim">Venda caro, e venda mais.</p>
                   <p>Técnicas e processos para o time fechar com o preço mais alto da região, e produtos que aumentam o ticket médio.</p>
                 </div>
               </li>
-              <li class="pillar">
+              <li class="pillar" data-tag="No palco: “resultado comprovado”">
                 <h3 class="pillar__name">Gestão</h3>
                 <div class="pillar__body">
                   <p class="pillar__claim">Menos custo, mais lucro.</p>
@@ -241,7 +259,9 @@
                 </div>
               </li>
             </ul>
+            <p class="method__index" aria-hidden="true"><span data-pillar-index>01</span> / 03</p>
           </div>
+          <div class="cine__slot" data-cine-slot="dock" aria-hidden="true"></div>
         </div>
       </div>
     </section>
